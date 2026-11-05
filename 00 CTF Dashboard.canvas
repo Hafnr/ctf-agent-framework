@@ -1,0 +1,72 @@
+{
+  "nodes": [
+    {
+      "id": "target",
+      "type": "text",
+      "text": "# Target / Challenge\n\nAdd the name, IP, URL, category, and flag format here.",
+      "x": 0,
+      "y": 0,
+      "width": 360,
+      "height": 220,
+      "color": "4"
+    },
+    {
+      "id": "enumeration",
+      "type": "text",
+      "text": "# Enumeration\n\n- Ports / services\n- Files / endpoints\n- Technologies\n- Inputs and parameters",
+      "x": 480,
+      "y": -180,
+      "width": 360,
+      "height": 240,
+      "color": "2"
+    },
+    {
+      "id": "findings",
+      "type": "text",
+      "text": "# Findings\n\nRecord facts separately from assumptions. Link detailed notes with `[[note name]]`.",
+      "x": 480,
+      "y": 160,
+      "width": 360,
+      "height": 220,
+      "color": "3"
+    },
+    {
+      "id": "hypotheses",
+      "type": "text",
+      "text": "# Hypotheses\n\n- What could explain the findings?\n- What is the cheapest test?\n- What result would disprove it?",
+      "x": 960,
+      "y": -180,
+      "width": 360,
+      "height": 240,
+      "color": "5"
+    },
+    {
+      "id": "attempts",
+      "type": "text",
+      "text": "# Attempts\n\nLog commands, payloads, results, and failures. Failed paths prevent repeated work.",
+      "x": 960,
+      "y": 160,
+      "width": 360,
+      "height": 220,
+      "color": "1"
+    },
+    {
+      "id": "solution",
+      "type": "text",
+      "text": "# Solution / Flag\n\n- Working exploit chain\n- Evidence\n- Flag\n- Cleanup for write-up",
+      "x": 1440,
+      "y": 0,
+      "width": 360,
+      "height": 240,
+      "color": "6"
+    }
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "target", "fromSide": "right", "toNode": "enumeration", "toSide": "left", "label": "inspect"},
+    {"id": "e2", "fromNode": "enumeration", "fromSide": "bottom", "toNode": "findings", "toSide": "top", "label": "observe"},
+    {"id": "e3", "fromNode": "findings", "fromSide": "right", "toNode": "hypotheses", "toSide": "left", "label": "explain"},
+    {"id": "e4", "fromNode": "hypotheses", "fromSide": "bottom", "toNode": "attempts", "toSide": "top", "label": "test"},
+    {"id": "e5", "fromNode": "attempts", "fromSide": "right", "toNode": "solution", "toSide": "left", "label": "confirm"},
+    {"id": "e6", "fromNode": "attempts", "fromSide": "left", "toNode": "findings", "toSide": "right", "label": "new evidence"}
+  ]
+}

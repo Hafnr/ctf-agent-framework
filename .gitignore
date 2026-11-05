@@ -1,0 +1,92 @@
+# Private CTF event material
+/Challenges/*
+!/Challenges/README.md
+/Writeups/*
+!/Writeups/Writeup Template.md
+/Attachments/*
+!/Attachments/README.md
+
+# Local investigation logs and scratch files
+/Commands/Command Log.md
+/debug.log
+/notes
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Challenge artifacts and generated evidence
+*.pcap
+*.pcapng
+*.cap
+*.dmp
+*.dump
+*.mem
+*.raw
+*.core
+core.*
+*.img
+*.iso
+*.vmdk
+*.vdi
+*.qcow2
+*.bin
+*.elf
+*.exe
+*.dll
+*.so
+*.so.*
+*.class
+*.jar
+*.apk
+*.ipa
+*.wasm
+chall
+challenge
+flag.txt
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+id_rsa*
+id_ed25519*
+known_hosts*
+.ssh/
+
+# Agent/editor state
+/.obsidian/workspace*.json
+/.obsidian/cache/
+/.obsidian/plugins/
+/.vscode/
+/.claude/
+/.codex/
+/.agents/
+
+# Language/tool caches
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.vsix
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# The VS Code extension is published as its own repository.
+/vscode-extension/obsidian-vault-panel/
