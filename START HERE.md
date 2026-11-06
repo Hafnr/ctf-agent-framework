@@ -49,3 +49,8 @@ See [[Playbook/Technical Sources and Attribution|Technical Sources and Attributi
 
 > [!warning] Authorized use only
 > Apply offensive techniques only to CTF infrastructure, deliberately vulnerable labs, or systems you have explicit permission to test.
+## Document every attack path
+
+For each challenge, copy [[Writeups/Attack Path Worklog Template]] into the challenge folder as `worklog.md` and copy `Templates/Attack Path Canvas Template.canvas` as `attack-path.canvas`. Record each meaningful hypothesis as `AP-01`, `AP-02`, and so on in both files. The canvas shows branch depth and failure points visually; the worklog stores exact tests and evidence. Use [[Writeups/Writeup Template]] for the final reproducible report.
+
+For a live view, open `LIVE Attack Status.md` or `attack-path.canvas` in Obsidian while the agent works. Agents update the view before and after each meaningful test through `Scripts/Update-AttackPath.ps1`.

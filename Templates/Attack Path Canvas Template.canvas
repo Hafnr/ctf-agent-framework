@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "type": "text",
+      "text": "# START\n\nInitial attack surface\n\nDepth 0\n\nWorklog: [[worklog]]",
+      "x": 0,
+      "y": 0,
+      "width": 260,
+      "height": 140,
+      "color": "6"
+    },
+    {
+      "id": "ap-01",
+      "type": "text",
+      "text": "# AP-01\n\nHypothesis\n\nStatus: untested\nDepth: 1\n\nSee worklog.md#AP-01",
+      "x": 400,
+      "y": 0,
+      "width": 300,
+      "height": 190
+    },
+    {
+      "id": "legend",
+      "type": "text",
+      "text": "# Status legend\n\nGreen (4): confirmed\nRed (1): rejected\nYellow (3): inconclusive\nCyan (5): in progress\nGrey: untested",
+      "x": 0,
+      "y": 260,
+      "width": 300,
+      "height": 210
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-start-ap-01",
+      "fromNode": "start",
+      "fromSide": "right",
+      "toNode": "ap-01",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "tested"
+    }
+  ]
+}

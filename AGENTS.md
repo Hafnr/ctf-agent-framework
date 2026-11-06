@@ -60,7 +60,13 @@ After two failed variations of the same idea, stop changing payload syntax blind
 
 ## Evidence and state discipline
 
-Maintain `Challenges/<event>/<challenge>/Challenge.md` as the source of truth.
+Keep each challenge artifact focused on one role:
+
+- `Challenge.md` records stable scope, supplied material, target details, constraints, and the verified outcome.
+- `worklog.md` is the human-readable source of truth for hypotheses, tests, evidence, decisions, and attack-path status.
+- `attack-events.jsonl` is the append-only machine-readable live event journal.
+- `commands.log` records significant commands, working directories, exit codes, and output references.
+- `attack-path.canvas` is a visual projection of the worklog and event journal; it is not authoritative when they disagree.
 
 - Separate **facts**, **inferences**, **hypotheses**, and **unknowns**.
 - Record exact commands, payloads, tool versions, full errors, and meaningful output.
@@ -94,7 +100,7 @@ A dedicated Kali Linux environment may be available through the SSH alias `ctf-k
 - Use `/home/kali/ctf-agent-work/` as the remote root for agent-created challenge files.
 - Create one remote directory per challenge: `/home/kali/ctf-agent-work/<event>/<challenge>/`.
 - Keep authoritative notes and final scripts in this vault. Copy only challenge-specific working files to Kali.
-- Record every significant remote command and result in the challenge-local `Challenge.md`.
+- Record significant remote commands in `commands.log` and their evidence and conclusions in `worklog.md`.
 - Quote remote paths and commands explicitly. Avoid long-lived interactive shells when a reproducible one-shot command works.
 - Do not store the Kali password, private SSH key, or other host credentials anywhere in this vault.
 - Do not use `sudo`, install packages, change Kali services, modify networking, or alter global tool configuration unless the user explicitly approves it.
@@ -185,6 +191,9 @@ Before declaring success, confirm all of the following:
 - `Challenge.md` contains the final commands, exploit chain, and evidence;
 - important generated scripts and artifacts are saved in the challenge directory;
 - assumptions and environment-specific details are documented.
+- every meaningful attack path has a final status or is explicitly marked interrupted;
+- `worklog.md` and `attack-path.canvas` agree at handoff;
+- the deepest confirmed branch, deepest failed branch, and successful-chain IDs are recorded.
 
 Then create `Writeups/<event>/<challenge>.md` using `Writeups/Writeup Template.md`. Include:
 
@@ -197,6 +206,8 @@ Then create `Writeups/<event>/<challenge>.md` using `Writeups/Writeup Template.m
 7. remediation or defensive lesson when applicable;
 8. reusable techniques and references.
 
+A challenge is not complete until the final writeup includes its scope, attack surface, attack-path ledger, successful exploitation chain, deepest failed branch, verification, clean reproduction steps, cleanup notes where applicable, and any reusable vault update. Mark unknown information explicitly rather than guessing.
+
 ## Agent response format
 
 During an active solve, updates should state:
@@ -208,3 +219,85 @@ During an active solve, updates should state:
 - any authorization, environment, or missing-data blocker.
 
 At handoff, provide the challenge-note path, scripts created, verified flag or current blocker, and the exact next action. Be explicit about uncertainty.
+## Attack-path documentation
+
+For every challenge, maintain a reproducible audit trail of the work performed. This is an action-and-evidence record, not private chain-of-thought. Record meaningful hypotheses, tests, commands, observable results, and decisions without inventing reasoning or results.
+
+Use the following local challenge structure when practical:
+
+```text
+Challenges/<event>/<challenge>/
+|-- Challenge.md
+|-- worklog.md
+|-- attack-path.canvas
+|-- LIVE Attack Status.md
+|-- attack-events.jsonl
+|-- commands.log
+|-- evidence/
+`-- exploit/
+```
+
+The challenge folder is private working material unless the user explicitly chooses to publish it. Never place flags, credentials, tokens, private target data, or unsanitized captures in a public playbook.
+
+### Required workflow
+
+1. Read `START HERE.md`, the relevant pathway/playbook, and the challenge description before testing.
+2. Copy `Writeups/Attack Path Worklog Template.md` to the challenge folder as `worklog.md` and `Templates/Attack Path Canvas Template.canvas` as `attack-path.canvas` when they do not already exist.
+3. Assign every meaningful hypothesis or branch a stable ID: `AP-01`, `AP-02`, and so on.
+4. For each path, record:
+   - the hypothesis and why it was plausible from observable evidence;
+   - the exact command, request, payload, or procedure used;
+   - timestamp, execution environment, and relevant tool versions when useful;
+   - exit code and concise observable output, with large outputs saved under `evidence/`;
+   - the result: `untested`, `in-progress`, `rejected`, `inconclusive`, or `confirmed`;
+   - the next decision and links to saved artifacts.
+5. Record failed and inconclusive paths. State what evidence ruled them out and avoid repeating them unless assumptions change.
+6. Save scripts and final exploits under `exploit/`. Save responses, screenshots, debugger excerpts, packet captures, and hashes under `evidence/` with descriptive names.
+7. Do not claim success from tool output alone. Reproduce the successful path from a clean starting point and verify the flag or intended objective.
+8. Produce the final writeup from `Writeups/Writeup Template.md`, including the attack-path ledger, rejected paths, exact reproduction steps, and evidence references.
+9. If the solution reveals a reusable technique missing from the vault, add a concise, generalized entry to the relevant playbook. Do not copy challenge secrets into the playbook.
+
+### Obsidian attack-path canvas
+
+Maintain `attack-path.canvas` as the visual counterpart of the Markdown ledger. The Markdown worklog remains the source of truth; the canvas is a navigable attack tree showing how far each branch progressed.
+
+- Give every canvas path node the same `AP-XX` ID used in `worklog.md`.
+- Connect each path to its parent with a directed edge labelled `tested`, `led to`, or another short observable transition.
+- Record `Parent` and `Depth` in the ledger. Initial hypotheses under `START` have depth 1; each additional dependent test increases depth by 1.
+- Lay out nodes from left to right by depth. Put sibling hypotheses vertically within the same depth column.
+- Use Obsidian Canvas colors consistently: green (`4`) for `confirmed`, red (`1`) for `rejected`, yellow (`3`) for `inconclusive`, cyan (`5`) for `in-progress`, and default/grey for `untested`.
+- Keep node text concise: ID, hypothesis, decisive test/result, status, and an evidence or worklog reference. Detailed output belongs in `worklog.md` or `evidence/`.
+- Add a `STOP` or terminal node when a branch fails. State the observable reason for failure and connect it to the last attempted path.
+- Update the canvas immediately after changing a ledger status. The canvas and ledger must not disagree at handoff.
+- Never delete a failed branch merely to simplify the graph. Collapse detail into its terminal node if needed, while preserving what was tested and why it stopped.
+- In the final writeup, report the deepest confirmed branch, deepest failed branch, and the IDs forming the successful chain.
+
+#### Live-update protocol
+
+Use `Scripts/Update-AttackPath.ps1` during an active solve so an open Obsidian canvas changes as testing happens.
+
+1. Immediately before a meaningful test, call the script with the path ID and `-Status in-progress`.
+2. Run the test and capture its observable output.
+3. Immediately call the script again with the same ID, the concise result, evidence reference, and final status.
+4. Do not batch these updates at the end of the solve. The post-test update is part of completing each test.
+5. When branching from an existing test, pass its ID with `-Parent`; the script derives the next depth when `-Depth` is omitted.
+
+Example:
+
+```powershell
+& "Scripts/Update-AttackPath.ps1" `
+  -ChallengeDir "Challenges/HNF/example" `
+  -Id "AP-03" `
+  -Parent "AP-01" `
+  -Hypothesis "The saved return address is controllable" `
+  -Test "Send a cyclic pattern and inspect the crash" `
+  -Status in-progress
+```
+
+After the command finishes, call it again with `-Result`, `-Evidence`, and the observed final status. The script updates `attack-path.canvas`, appends `attack-events.jsonl`, and refreshes `LIVE Attack Status.md`. It does not execute attacks itself.
+
+### Command capture
+
+Append significant local and Kali commands to `commands.log`. Each entry should include an ISO-8601 timestamp, working directory, command, exit code, and the location of full output when it is not included inline. Redact secrets before copying material into a writeup.
+
+Shell history is not sufficient evidence: it normally omits output and may omit commands. When an automatic command logger is unavailable, update `commands.log` immediately after each meaningful test.
